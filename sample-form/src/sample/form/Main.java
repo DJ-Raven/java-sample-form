@@ -1,11 +1,18 @@
 package sample.form;
 
 import com.formdev.flatlaf.FlatClientProperties;
+import com.formdev.flatlaf.FlatLaf;
+import com.formdev.flatlaf.extras.FlatSVGIcon;
 import com.formdev.flatlaf.fonts.roboto.FlatRobotoFont;
 import com.formdev.flatlaf.themes.FlatMacLightLaf;
 import java.awt.Font;
 import javax.swing.UIManager;
-import javax.swing.table.DefaultTableModel;
+import raven.popup.DefaultOption;
+import raven.popup.GlassPanePopup;
+import raven.popup.component.SimplePopupBorder;
+import raven.toast.Notifications;
+import sample.connection.DatabaseConnection;
+import sample.service.ServiceEmployee;
 import sample.table.CheckBoxTableHeaderRenderer;
 import sample.table.TableHeaderAlignment;
 
@@ -15,12 +22,16 @@ import sample.table.TableHeaderAlignment;
  */
 public class Main extends javax.swing.JFrame {
 
+    private ServiceEmployee service = new ServiceEmployee();
+
     public Main() {
         initComponents();
         init();
     }
 
     private void init() {
+        GlassPanePopup.install(this);
+        Notifications.getInstance().setJFrame(this);
         panel.putClientProperty(FlatClientProperties.STYLE, ""
                 + "arc:25;"
                 + "background:$Table.background");
@@ -46,36 +57,27 @@ public class Main extends javax.swing.JFrame {
                 + "thumbInsets:3,3,3,3;"
                 + "background:$Table.background;");
 
+        lbTitle.putClientProperty(FlatClientProperties.STYLE, ""
+                + "font:bold +5;");
+
+        txtSearch.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT, "Search...");
+        txtSearch.putClientProperty(FlatClientProperties.TEXT_FIELD_LEADING_ICON, new FlatSVGIcon("sample/icon/search.svg"));
+        txtSearch.putClientProperty(FlatClientProperties.STYLE, ""
+                + "arc:15;"
+                + "borderWidth:0;"
+                + "focusWidth:0;"
+                + "innerFocusWidth:0;"
+                + "margin:5,20,5,20;"
+                + "background:$Panel.background");
+
         table.getColumnModel().getColumn(0).setHeaderRenderer(new CheckBoxTableHeaderRenderer(table, 0));
         table.getTableHeader().setDefaultRenderer(new TableHeaderAlignment(table));
 
-        testData();
-    }
-
-    private void testData() {
-        DefaultTableModel model = (DefaultTableModel) table.getModel();
-
-        model.addRow(new Object[]{false, 1, "Hannah Scott", "Washington, D.C.", "20-August-2024", "$1,750", "Business Analyst", "Analytical thinker with experience in business process improvement."});
-        model.addRow(new Object[]{false, 2, "Samantha Smith", "New York City", "15-May-2024", "$1,200", "Marketing Manager", "Experienced marketing professional with a focus on digital advertising."});
-        model.addRow(new Object[]{false, 3, "John Johnson", "Los Angeles", "20-May-2024", "$1,500", "Software Engineer", "Skilled developer proficient in Java, Python, and JavaScript."});
-        model.addRow(new Object[]{false, 4, "Emily Brown", "Chicago", "25-May-2024", "$1,300", "Graphic Designer", "Creative designer with expertise in Adobe Creative Suite."});
-        model.addRow(new Object[]{false, 5, "Michael Davis", "San Francisco", "30-May-2024", "$1,800", "Financial Analyst", "Analytical thinker with a background in financial modeling and forecasting."});
-        model.addRow(new Object[]{false, 6, "Jessica Miller", "Seattle", "5-June-2024", "$1,600", "HR Manager", "Human resources professional specializing in recruitment and employee relations."});
-        model.addRow(new Object[]{false, 7, "David Martinez", "Miami", "10-June-2024", "$1,700", "Sales Representative", "Proven track record in sales and client relationship management."});
-        model.addRow(new Object[]{false, 8, "Sarah Thompson", "Boston", "15-June-2024", "$1,400", "Content Writer", "Versatile writer capable of producing engaging content across various platforms."});
-        model.addRow(new Object[]{false, 9, "Daniel Wilson", "Austin", "20-June-2024", "$1,550", "UX/UI Designer", "Design thinker focused on creating intuitive user experiences."});
-        model.addRow(new Object[]{false, 10, "Rachel Taylor", "Denver", "25-June-2024", "$1,350", "Accountant", "Detail-oriented accountant with expertise in financial reporting."});
-        model.addRow(new Object[]{false, 11, "Ryan Anderson", "Portland", "30-June-2024", "$1,900", "Project Manager", "Organized leader skilled in managing cross-functional teams."});
-        model.addRow(new Object[]{false, 12, "Lauren Hernandez", "Phoenix", "5-July-2024", "$1,750", "Marketing Coordinator", "Marketing professional with experience in campaign management and analysis."});
-        model.addRow(new Object[]{false, 13, "Kevin Garcia", "Atlanta", "10-July-2024", "$1,650", "Software Developer", "Full-stack developer proficient in front-end and back-end technologies."});
-        model.addRow(new Object[]{false, 14, "Amanda Martinez", "Houston", "15-July-2024", "$1,300", "Customer Service Representative", "Dedicated customer service professional committed to resolving issues."});
-        model.addRow(new Object[]{false, 15, "Erica Robinson", "Philadelphia", "20-July-2024", "$1,600", "Data Analyst", "Analytical thinker with expertise in data visualization and statistical analysis."});
-        model.addRow(new Object[]{false, 16, "Matthew Walker", "Dallas", "25-July-2024", "$1,850", "Operations Manager", "Efficient manager with experience in optimizing operational processes."});
-        model.addRow(new Object[]{false, 17, "Olivia Lewis", "Detroit", "30-July-2024", "$1,400", "Social Media Manager", "Strategic thinker with a passion for creating engaging social media content."});
-        model.addRow(new Object[]{false, 18, "Nathan King", "Minneapolis", "5-August-2024", "$1,700", "Web Developer", "Skilled web developer with expertise in HTML, CSS, and JavaScript frameworks."});
-        model.addRow(new Object[]{false, 19, "Maria Perez", "Orlando", "10-August-2024", "$1,550", "Digital Marketing Specialist", "Experienced marketer focused on digital advertising and SEO strategies."});
-        model.addRow(new Object[]{false, 20, "Justin White", "San Diego", "15-August-2024", "$1,450", "Financial Planner", "Certified financial planner with a client-centered approach."});
-
+        try {
+            DatabaseConnection.getInstance().connectToDatabase();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     @SuppressWarnings("unchecked")
@@ -86,6 +88,11 @@ public class Main extends javax.swing.JFrame {
         scroll = new javax.swing.JScrollPane();
         table = new javax.swing.JTable();
         jSeparator1 = new javax.swing.JSeparator();
+        txtSearch = new javax.swing.JTextField();
+        lbTitle = new javax.swing.JLabel();
+        cmdDelete = new sample.swing.ButtonAction();
+        cmdEdit = new sample.swing.ButtonAction();
+        cmdNew = new sample.swing.ButtonAction();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -125,20 +132,54 @@ public class Main extends javax.swing.JFrame {
             table.getColumnModel().getColumn(7).setPreferredWidth(150);
         }
 
+        lbTitle.setText("EMPLOYEE");
+
+        cmdDelete.setText("Delete");
+
+        cmdEdit.setText("Edit");
+
+        cmdNew.setText("New");
+        cmdNew.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                cmdNewActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout panelLayout = new javax.swing.GroupLayout(panel);
         panel.setLayout(panelLayout);
         panelLayout.setHorizontalGroup(
             panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addComponent(scroll, javax.swing.GroupLayout.DEFAULT_SIZE, 1063, Short.MAX_VALUE)
             .addComponent(jSeparator1)
+            .addGroup(panelLayout.createSequentialGroup()
+                .addGap(20, 20, 20)
+                .addGroup(panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(panelLayout.createSequentialGroup()
+                        .addComponent(txtSearch, javax.swing.GroupLayout.PREFERRED_SIZE, 239, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(cmdNew, javax.swing.GroupLayout.PREFERRED_SIZE, 101, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(cmdEdit, javax.swing.GroupLayout.PREFERRED_SIZE, 101, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(cmdDelete, javax.swing.GroupLayout.PREFERRED_SIZE, 101, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(lbTitle))
+                .addGap(20, 20, 20))
         );
         panelLayout.setVerticalGroup(
             panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panelLayout.createSequentialGroup()
-                .addGap(20, 20, 20)
+                .addGap(10, 10, 10)
+                .addComponent(lbTitle)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(txtSearch, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(cmdDelete, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(cmdEdit, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(cmdNew, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(0, 0, 0)
-                .addComponent(scroll, javax.swing.GroupLayout.DEFAULT_SIZE, 500, Short.MAX_VALUE)
+                .addComponent(scroll, javax.swing.GroupLayout.DEFAULT_SIZE, 420, Short.MAX_VALUE)
                 .addGap(10, 10, 10))
         );
 
@@ -163,8 +204,35 @@ public class Main extends javax.swing.JFrame {
         setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
 
+    private void cmdNewActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cmdNewActionPerformed
+        Create create = new Create();
+        create.loadData(service);
+        DefaultOption option = new DefaultOption() {
+            @Override
+            public boolean closeWhenClickOutside() {
+                return true;
+            }
+        };
+        String actions[] = new String[]{"Cancel", "Save"};
+        GlassPanePopup.showPopup(new SimplePopupBorder(create, "Create Employee", actions, (pc, i) -> {
+            if (i == 1) {
+                // save
+                try {
+                    service.create(create.getData());
+                    pc.closePopup();
+                    Notifications.getInstance().show(Notifications.Type.SUCCESS, "Employee has been created");
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            } else {
+                pc.closePopup();
+            }
+        }), option);
+    }//GEN-LAST:event_cmdNewActionPerformed
+
     public static void main(String args[]) {
         FlatRobotoFont.install();
+        FlatLaf.registerCustomDefaultsSource("sample.themes");
         UIManager.put("defaultFont", new Font(FlatRobotoFont.FAMILY, Font.PLAIN, 13));
         FlatMacLightLaf.setup();
 
@@ -176,9 +244,14 @@ public class Main extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private sample.swing.ButtonAction cmdDelete;
+    private sample.swing.ButtonAction cmdEdit;
+    private sample.swing.ButtonAction cmdNew;
     private javax.swing.JSeparator jSeparator1;
+    private javax.swing.JLabel lbTitle;
     private javax.swing.JPanel panel;
     private javax.swing.JScrollPane scroll;
     private javax.swing.JTable table;
+    private javax.swing.JTextField txtSearch;
     // End of variables declaration//GEN-END:variables
 }
