@@ -13,6 +13,7 @@ import javax.swing.JTable;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
+import javax.swing.event.TableModelEvent;
 import javax.swing.table.TableCellRenderer;
 
 /**
@@ -50,7 +51,7 @@ public class CheckBoxTableHeaderRenderer extends JCheckBox implements TableCellR
         });
 
         table.getModel().addTableModelListener((tme) -> {
-            if (tme.getColumn() == column) {
+            if (tme.getColumn() == column || tme.getType() == TableModelEvent.DELETE) {
                 checkRow();
             }
         });

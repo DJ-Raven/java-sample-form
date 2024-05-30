@@ -20,13 +20,26 @@ public class Create extends javax.swing.JPanel {
         datePicker.setEditor(txtDate);
     }
 
-    public void loadData(ServiceEmployee service) {
+    public void loadData(ServiceEmployee service, ModelEmployee data) {
         try {
             for (ModelPositions pos : service.getServicePositions().getAll()) {
                 comboPosition.addItem(pos);
+                if (data != null && data.getPositions().getPositionsId() == pos.getPositionsId()) {
+                    comboPosition.setSelectedItem(pos);
+                }
             }
         } catch (Exception e) {
             e.printStackTrace();
+        }
+
+        if (data != null) {
+            txtName.setText(data.getName());
+            txtLocation.setText(data.getLocation());
+            if (data.getDate() != null) {
+                datePicker.setSelectedDate(data.getDate().toLocalDate());
+            }
+            txtSalary.setValue(data.getSalary());
+            txtDescription.setText(data.getDescription());
         }
     }
 

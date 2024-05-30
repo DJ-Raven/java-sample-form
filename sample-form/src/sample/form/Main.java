@@ -6,12 +6,18 @@ import com.formdev.flatlaf.extras.FlatSVGIcon;
 import com.formdev.flatlaf.fonts.roboto.FlatRobotoFont;
 import com.formdev.flatlaf.themes.FlatMacLightLaf;
 import java.awt.Font;
+import java.util.ArrayList;
+import java.util.List;
+import javax.swing.JLabel;
 import javax.swing.UIManager;
+import javax.swing.border.EmptyBorder;
+import javax.swing.table.DefaultTableModel;
 import raven.popup.DefaultOption;
 import raven.popup.GlassPanePopup;
 import raven.popup.component.SimplePopupBorder;
 import raven.toast.Notifications;
 import sample.connection.DatabaseConnection;
+import sample.model.ModelEmployee;
 import sample.service.ServiceEmployee;
 import sample.table.CheckBoxTableHeaderRenderer;
 import sample.table.TableHeaderAlignment;
@@ -75,6 +81,39 @@ public class Main extends javax.swing.JFrame {
 
         try {
             DatabaseConnection.getInstance().connectToDatabase();
+            loadData();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void loadData() {
+        try {
+            DefaultTableModel model = (DefaultTableModel) table.getModel();
+            if (table.isEditing()) {
+                table.getCellEditor().stopCellEditing();
+            }
+            model.setRowCount(0);
+            List<ModelEmployee> list = service.getAll();
+            for (ModelEmployee d : list) {
+                model.addRow(d.toTableRow(table.getRowCount() + 1));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void searchData(String search) {
+        try {
+            DefaultTableModel model = (DefaultTableModel) table.getModel();
+            if (table.isEditing()) {
+                table.getCellEditor().stopCellEditing();
+            }
+            model.setRowCount(0);
+            List<ModelEmployee> list = service.search(search);
+            for (ModelEmployee d : list) {
+                model.addRow(d.toTableRow(table.getRowCount() + 1));
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -132,11 +171,27 @@ public class Main extends javax.swing.JFrame {
             table.getColumnModel().getColumn(7).setPreferredWidth(150);
         }
 
+        txtSearch.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                txtSearchKeyReleased(evt);
+            }
+        });
+
         lbTitle.setText("EMPLOYEE");
 
         cmdDelete.setText("Delete");
+        cmdDelete.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                cmdDeleteActionPerformed(evt);
+            }
+        });
 
         cmdEdit.setText("Edit");
+        cmdEdit.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                cmdEditActionPerformed(evt);
+            }
+        });
 
         cmdNew.setText("New");
         cmdNew.addActionListener(new java.awt.event.ActionListener() {
@@ -206,7 +261,7 @@ public class Main extends javax.swing.JFrame {
 
     private void cmdNewActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cmdNewActionPerformed
         Create create = new Create();
-        create.loadData(service);
+        create.loadData(service, null);
         DefaultOption option = new DefaultOption() {
             @Override
             public boolean closeWhenClickOutside() {
@@ -221,6 +276,7 @@ public class Main extends javax.swing.JFrame {
                     service.create(create.getData());
                     pc.closePopup();
                     Notifications.getInstance().show(Notifications.Type.SUCCESS, "Employee has been created");
+                    loadData();
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -229,6 +285,94 @@ public class Main extends javax.swing.JFrame {
             }
         }), option);
     }//GEN-LAST:event_cmdNewActionPerformed
+
+    private void txtSearchKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtSearchKeyReleased
+        searchData(txtSearch.getText().trim());
+    }//GEN-LAST:event_txtSearchKeyReleased
+
+    private void cmdEditActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cmdEditActionPerformed
+        List<ModelEmployee> list = getSelectedData();
+        if (!list.isEmpty()) {
+            if (list.size() == 1) {
+                ModelEmployee data = list.get(0);
+                Create create = new Create();
+                create.loadData(service, data);
+                DefaultOption option = new DefaultOption() {
+                    @Override
+                    public boolean closeWhenClickOutside() {
+                        return true;
+                    }
+                };
+                String actions[] = new String[]{"Cancel", "Update"};
+                GlassPanePopup.showPopup(new SimplePopupBorder(create, "Edit Employee [" + data.getName() + "]", actions, (pc, i) -> {
+                    if (i == 1) {
+                        // edit
+                        try {
+                            ModelEmployee dataEdit = create.getData();
+                            dataEdit.setEmployeeId(data.getEmployeeId());
+                            service.edit(dataEdit);
+                            pc.closePopup();
+                            Notifications.getInstance().show(Notifications.Type.SUCCESS, "Employee has been updated");
+                            loadData();
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    } else {
+                        pc.closePopup();
+                    }
+                }), option);
+            } else {
+                Notifications.getInstance().show(Notifications.Type.WARNING, "Please select only one employee");
+            }
+        } else {
+            Notifications.getInstance().show(Notifications.Type.WARNING, "Please select employee to edit");
+        }
+    }//GEN-LAST:event_cmdEditActionPerformed
+
+    private void cmdDeleteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cmdDeleteActionPerformed
+        List<ModelEmployee> list = getSelectedData();
+        if (!list.isEmpty()) {
+            DefaultOption option = new DefaultOption() {
+                @Override
+                public boolean closeWhenClickOutside() {
+                    return true;
+                }
+            };
+            String actions[] = new String[]{"Cancel", "Delete"};
+            JLabel label = new JLabel("Are you sure to delete " + list.size() + " employee ?");
+            label.setBorder(new EmptyBorder(0, 25, 0, 25));
+            GlassPanePopup.showPopup(new SimplePopupBorder(label, "Confirm Delete", actions, (pc, i) -> {
+                if (i == 1) {
+                    // delete
+                    try {
+                        for (ModelEmployee d : list) {
+                            service.delete(d.getEmployeeId());
+                        }
+                        pc.closePopup();
+                        Notifications.getInstance().show(Notifications.Type.SUCCESS, "Employee has been deleted");
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                    loadData();
+                } else {
+                    pc.closePopup();
+                }
+            }), option);
+        } else {
+            Notifications.getInstance().show(Notifications.Type.WARNING, "Please select employee to delete");
+        }
+    }//GEN-LAST:event_cmdDeleteActionPerformed
+
+    private List<ModelEmployee> getSelectedData() {
+        List<ModelEmployee> list = new ArrayList<>();
+        for (int i = 0; i < table.getRowCount(); i++) {
+            if ((boolean) table.getValueAt(i, 0)) {
+                ModelEmployee data = (ModelEmployee) table.getValueAt(i, 2);
+                list.add(data);
+            }
+        }
+        return list;
+    }
 
     public static void main(String args[]) {
         FlatRobotoFont.install();

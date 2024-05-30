@@ -1,6 +1,10 @@
 package sample.model;
 
 import java.sql.Date;
+import java.text.DateFormat;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
+import java.text.SimpleDateFormat;
 
 /**
  *
@@ -84,4 +88,15 @@ public class ModelEmployee {
     private double salary;
     private String description;
     private ModelPositions positions;
+
+    public Object[] toTableRow(int rowNum) {
+        DateFormat df = new SimpleDateFormat("dd-MMMM-yyyy");
+        NumberFormat nf = new DecimalFormat("$ #,##0.##");
+        return new Object[]{false, rowNum, this, location, date == null ? "" : df.format(date), nf.format(salary), positions, description};
+    }
+
+    @Override
+    public String toString() {
+        return name;
+    }
 }
