@@ -1,8 +1,19 @@
 package sample.form;
 
+import com.formdev.flatlaf.FlatClientProperties;
+import com.formdev.flatlaf.extras.FlatSVGIcon;
+import com.formdev.flatlaf.util.UIScale;
+import java.awt.Rectangle;
+import java.awt.Shape;
+import java.io.File;
 import java.sql.Date;
+import javaswingdev.picturebox.DefaultPictureBoxRender;
+import javax.swing.ImageIcon;
+import javax.swing.SwingUtilities;
+import jnafilechooser.api.JnaFileChooser;
 import sample.model.ModelEmployee;
 import sample.model.ModelPositions;
+import sample.model.other.ModelProfile;
 import sample.service.ServiceEmployee;
 
 /**
@@ -18,6 +29,16 @@ public class Create extends javax.swing.JPanel {
         initComponents();
         datePicker.setCloseAfterSelected(true);
         datePicker.setEditor(txtDate);
+        pic.setPictureBoxRender(new DefaultPictureBoxRender() {
+            @Override
+            public Shape render(Rectangle rectangle) {
+                return createRound(rectangle, UIScale.scale(10));
+            }
+        });
+        pic.setImage(new FlatSVGIcon("sample/icon/profile.svg", 5f));
+        panelPic.putClientProperty(FlatClientProperties.STYLE, ""
+                + "border:0,0,0,0,$Component.borderColor,,10;"
+                + "background:$TextArea.background");
     }
 
     public void loadData(ServiceEmployee service, ModelEmployee data) {
@@ -40,6 +61,10 @@ public class Create extends javax.swing.JPanel {
             }
             txtSalary.setValue(data.getSalary());
             txtDescription.setText(data.getDescription());
+            profile = new ModelProfile(data.getProfile().getIcon());
+            if (profile.getIcon() != null) {
+                pic.setImage(profile.getIcon());
+            }
         }
     }
 
@@ -66,6 +91,12 @@ public class Create extends javax.swing.JPanel {
         jLabel6 = new javax.swing.JLabel();
         jScrollPane1 = new javax.swing.JScrollPane();
         txtDescription = new javax.swing.JTextArea();
+        jLabel7 = new javax.swing.JLabel();
+        panelPic = new javax.swing.JPanel();
+        pic = new javaswingdev.picturebox.PictureBox();
+        jToolBar1 = new javax.swing.JToolBar();
+        cmdBrowse = new javax.swing.JButton();
+        cmdDelete = new javax.swing.JButton();
 
         jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.TRAILING);
         jLabel1.setText("Name");
@@ -93,6 +124,56 @@ public class Create extends javax.swing.JPanel {
         txtDescription.setWrapStyleWord(true);
         jScrollPane1.setViewportView(txtDescription);
 
+        jLabel7.setHorizontalAlignment(javax.swing.SwingConstants.TRAILING);
+        jLabel7.setText("Position");
+
+        panelPic.setLayout(new java.awt.BorderLayout());
+
+        jToolBar1.setRollover(true);
+        jToolBar1.setOpaque(false);
+
+        cmdBrowse.setText("Browse");
+        cmdBrowse.setFocusable(false);
+        cmdBrowse.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        cmdBrowse.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        cmdBrowse.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                cmdBrowseActionPerformed(evt);
+            }
+        });
+        jToolBar1.add(cmdBrowse);
+
+        cmdDelete.setForeground(new java.awt.Color(255, 0, 0));
+        cmdDelete.setText("Delete");
+        cmdDelete.setFocusable(false);
+        cmdDelete.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        cmdDelete.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        cmdDelete.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                cmdDeleteActionPerformed(evt);
+            }
+        });
+        jToolBar1.add(cmdDelete);
+
+        javax.swing.GroupLayout picLayout = new javax.swing.GroupLayout(pic);
+        pic.setLayout(picLayout);
+        picLayout.setHorizontalGroup(
+            picLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, picLayout.createSequentialGroup()
+                .addContainerGap(220, Short.MAX_VALUE)
+                .addComponent(jToolBar1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap())
+        );
+        picLayout.setVerticalGroup(
+            picLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(picLayout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jToolBar1, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(119, Short.MAX_VALUE))
+        );
+
+        panelPic.add(pic, java.awt.BorderLayout.CENTER);
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
@@ -105,15 +186,21 @@ public class Create extends javax.swing.JPanel {
                     .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel6, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(10, 10, 10)
+                    .addComponent(jLabel6, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel7, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane1)
-                    .addComponent(comboPosition, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(txtSalary)
-                    .addComponent(txtDate)
-                    .addComponent(txtLocation, javax.swing.GroupLayout.DEFAULT_SIZE, 350, Short.MAX_VALUE)
-                    .addComponent(txtName))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(10, 10, 10)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jScrollPane1)
+                            .addComponent(comboPosition, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(txtSalary)
+                            .addComponent(txtDate)
+                            .addComponent(txtLocation)
+                            .addComponent(txtName)))
+                    .addGroup(layout.createSequentialGroup()
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(panelPic, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
                 .addGap(50, 50, 50))
         );
         layout.setVerticalGroup(
@@ -141,11 +228,33 @@ public class Create extends javax.swing.JPanel {
                     .addComponent(jLabel5))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel6)
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 185, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(jLabel7, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(panelPic, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabel6, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(16, Short.MAX_VALUE))
         );
     }// </editor-fold>//GEN-END:initComponents
+
+    private void cmdBrowseActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cmdBrowseActionPerformed
+        JnaFileChooser ch = new JnaFileChooser();
+        ch.addFilter("Image", "png", "jpg");
+        boolean act = ch.showOpenDialog(SwingUtilities.getWindowAncestor(this));
+        if (act) {
+            File file = ch.getSelectedFile();
+            pic.setImage(new ImageIcon(file.getAbsolutePath()));
+            profile = new ModelProfile(file);
+        }
+    }//GEN-LAST:event_cmdBrowseActionPerformed
+
+    private ModelProfile profile;
+
+    private void cmdDeleteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cmdDeleteActionPerformed
+        pic.setImage(new FlatSVGIcon("sample/icon/profile.svg", 5f));
+        profile = null;
+    }//GEN-LAST:event_cmdDeleteActionPerformed
 
     public ModelEmployee getData() {
         String name = txtName.getText().trim();
@@ -154,10 +263,12 @@ public class Create extends javax.swing.JPanel {
         double salary = Double.parseDouble(txtSalary.getValue().toString());
         String description = txtDescription.getText().trim();
         ModelPositions positions = (ModelPositions) comboPosition.getSelectedItem();
-        return new ModelEmployee(0, name, location, date, salary, description, positions);
+        return new ModelEmployee(0, name, location, date, salary, description, profile, positions);
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton cmdBrowse;
+    private javax.swing.JButton cmdDelete;
     private javax.swing.JComboBox<Object> comboPosition;
     private raven.datetime.component.date.DatePicker datePicker;
     private javax.swing.JLabel jLabel1;
@@ -166,7 +277,11 @@ public class Create extends javax.swing.JPanel {
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
+    private javax.swing.JLabel jLabel7;
     private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JToolBar jToolBar1;
+    private javax.swing.JPanel panelPic;
+    private javaswingdev.picturebox.PictureBox pic;
     private javax.swing.JFormattedTextField txtDate;
     private javax.swing.JTextArea txtDescription;
     private javax.swing.JTextField txtLocation;

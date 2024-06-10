@@ -5,12 +5,21 @@ import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
+import sample.model.other.ModelProfile;
 
 /**
  *
  * @author RAVEN
  */
 public class ModelEmployee {
+
+    public ModelProfile getProfile() {
+        return profile;
+    }
+
+    public void setProfile(ModelProfile profile) {
+        this.profile = profile;
+    }
 
     public int getEmployeeId() {
         return employeeId;
@@ -68,13 +77,14 @@ public class ModelEmployee {
         this.positions = positions;
     }
 
-    public ModelEmployee(int employeeId, String name, String location, Date date, double salary, String description, ModelPositions positions) {
+    public ModelEmployee(int employeeId, String name, String location, Date date, double salary, String description, ModelProfile profile, ModelPositions positions) {
         this.employeeId = employeeId;
         this.name = name;
         this.location = location;
         this.date = date;
         this.salary = salary;
         this.description = description;
+        this.profile = profile;
         this.positions = positions;
     }
 
@@ -87,12 +97,13 @@ public class ModelEmployee {
     private Date date;
     private double salary;
     private String description;
+    private ModelProfile profile;
     private ModelPositions positions;
 
     public Object[] toTableRow(int rowNum) {
         DateFormat df = new SimpleDateFormat("dd-MMMM-yyyy");
         NumberFormat nf = new DecimalFormat("$ #,##0.##");
-        return new Object[]{false, rowNum, this, location, date == null ? "" : df.format(date), nf.format(salary), positions, description};
+        return new Object[]{false, rowNum, this, date == null ? "" : df.format(date), nf.format(salary), positions, description};
     }
 
     @Override

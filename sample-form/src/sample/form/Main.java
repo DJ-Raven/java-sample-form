@@ -4,7 +4,7 @@ import com.formdev.flatlaf.FlatClientProperties;
 import com.formdev.flatlaf.FlatLaf;
 import com.formdev.flatlaf.extras.FlatSVGIcon;
 import com.formdev.flatlaf.fonts.roboto.FlatRobotoFont;
-import com.formdev.flatlaf.themes.FlatMacLightLaf;
+import com.formdev.flatlaf.themes.FlatMacDarkLaf;
 import java.awt.Font;
 import java.util.ArrayList;
 import java.util.List;
@@ -20,6 +20,7 @@ import sample.connection.DatabaseConnection;
 import sample.model.ModelEmployee;
 import sample.service.ServiceEmployee;
 import sample.table.CheckBoxTableHeaderRenderer;
+import sample.table.ProfileTableRenderer;
 import sample.table.TableHeaderAlignment;
 
 /**
@@ -50,7 +51,7 @@ public class Main extends javax.swing.JFrame {
                 + "font:bold;");
 
         table.putClientProperty(FlatClientProperties.STYLE, ""
-                + "rowHeight:30;"
+                + "rowHeight:70;"
                 + "showHorizontalLines:true;"
                 + "intercellSpacing:0,1;"
                 + "cellFocusColor:$TableHeader.hoverBackground;"
@@ -78,6 +79,7 @@ public class Main extends javax.swing.JFrame {
 
         table.getColumnModel().getColumn(0).setHeaderRenderer(new CheckBoxTableHeaderRenderer(table, 0));
         table.getTableHeader().setDefaultRenderer(new TableHeaderAlignment(table));
+        table.getColumnModel().getColumn(2).setCellRenderer(new ProfileTableRenderer(table));
 
         try {
             DatabaseConnection.getInstance().connectToDatabase();
@@ -142,14 +144,14 @@ public class Main extends javax.swing.JFrame {
 
             },
             new String [] {
-                "SELECT", "#", "NAME", "LOCATION", "DATE", "SALARY", "POSITIONS", "DESCRIPTION"
+                "SELECT", "#", "NAME", "DATE", "SALARY", "POSITIONS", "DESCRIPTION"
             }
         ) {
             Class[] types = new Class [] {
-                java.lang.Boolean.class, java.lang.Object.class, java.lang.Object.class, java.lang.Object.class, java.lang.Object.class, java.lang.Object.class, java.lang.Object.class, java.lang.Object.class
+                java.lang.Boolean.class, java.lang.Object.class, java.lang.Object.class, java.lang.Object.class, java.lang.Object.class, java.lang.Object.class, java.lang.Object.class
             };
             boolean[] canEdit = new boolean [] {
-                true, false, false, true, false, false, false, false
+                true, false, false, false, false, false, false
             };
 
             public Class getColumnClass(int columnIndex) {
@@ -165,10 +167,10 @@ public class Main extends javax.swing.JFrame {
         if (table.getColumnModel().getColumnCount() > 0) {
             table.getColumnModel().getColumn(0).setMaxWidth(50);
             table.getColumnModel().getColumn(1).setMaxWidth(40);
-            table.getColumnModel().getColumn(2).setPreferredWidth(100);
-            table.getColumnModel().getColumn(5).setPreferredWidth(50);
+            table.getColumnModel().getColumn(2).setPreferredWidth(200);
+            table.getColumnModel().getColumn(4).setPreferredWidth(50);
+            table.getColumnModel().getColumn(5).setPreferredWidth(150);
             table.getColumnModel().getColumn(6).setPreferredWidth(150);
-            table.getColumnModel().getColumn(7).setPreferredWidth(150);
         }
 
         txtSearch.addKeyListener(new java.awt.event.KeyAdapter() {
@@ -204,7 +206,7 @@ public class Main extends javax.swing.JFrame {
         panel.setLayout(panelLayout);
         panelLayout.setHorizontalGroup(
             panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(scroll, javax.swing.GroupLayout.DEFAULT_SIZE, 1063, Short.MAX_VALUE)
+            .addComponent(scroll, javax.swing.GroupLayout.DEFAULT_SIZE, 1190, Short.MAX_VALUE)
             .addComponent(jSeparator1)
             .addGroup(panelLayout.createSequentialGroup()
                 .addGap(20, 20, 20)
@@ -234,7 +236,7 @@ public class Main extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(0, 0, 0)
-                .addComponent(scroll, javax.swing.GroupLayout.DEFAULT_SIZE, 420, Short.MAX_VALUE)
+                .addComponent(scroll, javax.swing.GroupLayout.DEFAULT_SIZE, 528, Short.MAX_VALUE)
                 .addGap(10, 10, 10))
         );
 
@@ -378,7 +380,7 @@ public class Main extends javax.swing.JFrame {
         FlatRobotoFont.install();
         FlatLaf.registerCustomDefaultsSource("sample.themes");
         UIManager.put("defaultFont", new Font(FlatRobotoFont.FAMILY, Font.PLAIN, 13));
-        FlatMacLightLaf.setup();
+        FlatMacDarkLaf.setup();
 
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
