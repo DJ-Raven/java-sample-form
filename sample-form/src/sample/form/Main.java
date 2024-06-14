@@ -5,12 +5,18 @@ import com.formdev.flatlaf.FlatLaf;
 import com.formdev.flatlaf.extras.FlatSVGIcon;
 import com.formdev.flatlaf.fonts.roboto.FlatRobotoFont;
 import com.formdev.flatlaf.themes.FlatMacDarkLaf;
+import java.awt.Component;
 import java.awt.Font;
+import java.sql.Date;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 import javax.swing.JLabel;
+import javax.swing.JTable;
 import javax.swing.UIManager;
 import javax.swing.border.EmptyBorder;
+import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import raven.popup.DefaultOption;
 import raven.popup.GlassPanePopup;
@@ -20,6 +26,7 @@ import sample.connection.DatabaseConnection;
 import sample.model.ModelEmployee;
 import sample.service.ServiceEmployee;
 import sample.table.CheckBoxTableHeaderRenderer;
+import sample.table.DateTableCellEditor;
 import sample.table.ProfileTableRenderer;
 import sample.table.TableHeaderAlignment;
 
@@ -80,6 +87,21 @@ public class Main extends javax.swing.JFrame {
         table.getColumnModel().getColumn(0).setHeaderRenderer(new CheckBoxTableHeaderRenderer(table, 0));
         table.getTableHeader().setDefaultRenderer(new TableHeaderAlignment(table));
         table.getColumnModel().getColumn(2).setCellRenderer(new ProfileTableRenderer(table));
+
+        // create celledit datepicker
+        table.getColumnModel().getColumn(3).setCellEditor(new DateTableCellEditor());
+        // create date renderer format
+        table.getColumnModel().getColumn(3).setCellRenderer(new DefaultTableCellRenderer() {
+            @Override
+            public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+                Component com = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+                if (value != null && value instanceof Date) {
+                    DateFormat df = new SimpleDateFormat("dd-MMMM-yyyy");
+                    setText(df.format((Date) value));
+                }
+                return com;
+            }
+        });
 
         try {
             DatabaseConnection.getInstance().connectToDatabase();
@@ -151,7 +173,7 @@ public class Main extends javax.swing.JFrame {
                 java.lang.Boolean.class, java.lang.Object.class, java.lang.Object.class, java.lang.Object.class, java.lang.Object.class, java.lang.Object.class, java.lang.Object.class
             };
             boolean[] canEdit = new boolean [] {
-                true, false, false, false, false, false, false
+                true, false, false, true, false, false, false
             };
 
             public Class getColumnClass(int columnIndex) {

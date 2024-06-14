@@ -109,7 +109,7 @@
                     <Column editable="true" title="SELECT" type="java.lang.Boolean"/>
                     <Column editable="false" title="#" type="java.lang.Object"/>
                     <Column editable="false" title="NAME" type="java.lang.Object"/>
-                    <Column editable="false" title="DATE" type="java.lang.Object"/>
+                    <Column editable="true" title="DATE" type="java.lang.Object"/>
                     <Column editable="false" title="SALARY" type="java.lang.Object"/>
                     <Column editable="false" title="POSITIONS" type="java.lang.Object"/>
                     <Column editable="false" title="DESCRIPTION" type="java.lang.Object"/>
