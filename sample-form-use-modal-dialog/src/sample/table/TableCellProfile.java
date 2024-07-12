@@ -2,7 +2,6 @@ package sample.table;
 
 import com.formdev.flatlaf.FlatClientProperties;
 import java.awt.Font;
-import raven.extras.AvatarIcon;
 import sample.model.ModelEmployee;
 
 /**
@@ -20,9 +19,7 @@ public class TableCellProfile extends javax.swing.JPanel {
         lbLocation.putClientProperty(FlatClientProperties.STYLE, ""
                 + "foreground:$Label.disabledForeground");
         if (data.getProfile().getIcon() != null) {
-            AvatarIcon avatarIcon = new AvatarIcon(data.getProfile().getIcon(), 55, 55, 3f);
-            avatarIcon.setType(AvatarIcon.Type.MASK_SQUIRCLE);
-            pic.setIcon(avatarIcon);
+            pic.setIcon(data.getProfile().getAvatarIcon());
         }
     }
 

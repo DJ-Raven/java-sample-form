@@ -36,7 +36,6 @@ public class Main extends javax.swing.JFrame {
     }
 
     private void init() {
-        ModalDialog.getDefaultOption().setAnimationEnabled(false);
         panel.putClientProperty(FlatClientProperties.STYLE, ""
                 + "arc:25;"
                 + "background:$Table.background");
@@ -326,7 +325,7 @@ public class Main extends javax.swing.JFrame {
                 new SimpleModalBorder.Option("Delete", SimpleModalBorder.OK_OPTION)
             };
 
-            JLabel label = new JLabel("Are you sure to delete " + list.size() + " employee ?");
+            JLabel label = new JLabel("Are you  sure to delete " + list.size() + " employee ?");
             label.setBorder(new EmptyBorder(0, 25, 0, 25));
             ModalDialog.showModal(this, new SimpleModalBorder(label, "Confirm Delete", options, (mc, i) -> {
                 if (i == SimpleModalBorder.OK_OPTION) {
