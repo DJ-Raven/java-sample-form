@@ -266,6 +266,10 @@ public class Create extends javax.swing.JPanel {
         return new ModelEmployee(0, name, location, date, salary, description, profile, positions);
     }
 
+    public void init() {
+        txtName.grabFocus();
+    }
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton cmdBrowse;
     private javax.swing.JButton cmdDelete;

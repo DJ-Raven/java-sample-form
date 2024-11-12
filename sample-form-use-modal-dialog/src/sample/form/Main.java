@@ -15,6 +15,7 @@ import javax.swing.table.DefaultTableModel;
 import raven.modal.ModalDialog;
 import raven.modal.Toast;
 import raven.modal.component.SimpleModalBorder;
+import raven.modal.option.BorderOption;
 import sample.connection.DatabaseConnection;
 import sample.model.ModelEmployee;
 import sample.service.ServiceEmployee;
@@ -77,6 +78,14 @@ public class Main extends javax.swing.JFrame {
         table.getColumnModel().getColumn(0).setHeaderRenderer(new CheckBoxTableHeaderRenderer(table, 0));
         table.getTableHeader().setDefaultRenderer(new TableHeaderAlignment(table));
         table.getColumnModel().getColumn(2).setCellRenderer(new ProfileTableRenderer(table));
+
+        // init default modal
+        ModalDialog.getDefaultOption()
+                .setOpacity(0.3f)
+                .getLayoutOption().setAnimateScale(0.1f);
+        ModalDialog.getDefaultOption()
+                .getBorderOption()
+                .setShadow(BorderOption.Shadow.MEDIUM);
 
         try {
             DatabaseConnection.getInstance().connectToDatabase();
@@ -276,6 +285,8 @@ public class Main extends javax.swing.JFrame {
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
+            } else if (i == SimpleModalBorder.OPENED) {
+                create.init();
             }
         }));
     }//GEN-LAST:event_cmdNewActionPerformed
@@ -307,6 +318,8 @@ public class Main extends javax.swing.JFrame {
                         } catch (Exception e) {
                             e.printStackTrace();
                         }
+                    } else if (i == SimpleModalBorder.OPENED) {
+                        create.init();
                     }
                 }));
             } else {
@@ -326,7 +339,7 @@ public class Main extends javax.swing.JFrame {
             };
 
             JLabel label = new JLabel("Are you  sure to delete " + list.size() + " employee ?");
-            label.setBorder(new EmptyBorder(0, 25, 0, 25));
+            label.setBorder(new EmptyBorder(5, 25, 5, 25));
             ModalDialog.showModal(this, new SimpleModalBorder(label, "Confirm Delete", options, (mc, i) -> {
                 if (i == SimpleModalBorder.OK_OPTION) {
                     // delete
